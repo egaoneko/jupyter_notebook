@@ -5,6 +5,9 @@ def solve (a, b):
 
 def is_superfluous(L, i):
     zero_like = 1e-14
+
+    if(len(L)-1 <= i):
+        return False
     A = np.transpose(np.array(L[:i] + L[i+1:]))
     b = np.array(L[i])
     u = np.transpose(np.array([solve(A,b)[0]]))
@@ -14,6 +17,37 @@ def is_superfluous(L, i):
 
 def is_independent(L):
     for idx, val in enumerate(L):
-        if(sc.is_superfluous(L,idx)):
+        if(is_superfluous(L,idx)):
             return False
     return True
+
+def subset_basis_shrink(T):
+    S = T[:]
+
+    for v in T:
+        size = len(S)-1
+        if(is_superfluous(S,size)):
+            S = S[:size]
+    return S
+
+def subset_basis_glow(T):
+    S = []
+
+    for v in T:
+        S.append(v)
+        if(not is_independent(S)):
+            S.pop()
+    return S
+
+def subset_basis(T):
+    return subset_basis_glow(T)
+
+def superset_basis(T, L):
+    super_basis_list = T[:]
+
+    # step2: add the vec from L by grow style
+    for i in range(len(L)):
+        temp = super_basis_list+[L[i]]
+        if is_independent(temp):
+            super_basis_list.append(L[i])
+    return super_basis_list
