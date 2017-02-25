@@ -6,7 +6,7 @@ def solve (a, b):
 def is_superfluous(L, i):
     zero_like = 1e-14
 
-    if(len(L)-1 <= i):
+    if len(L) == 1:
         return False
     A = np.transpose(np.array(L[:i] + L[i+1:]))
     b = np.array(L[i])
@@ -51,3 +51,18 @@ def superset_basis(T, L):
         if is_independent(temp):
             super_basis_list.append(L[i])
     return super_basis_list
+
+def exchange(S, A, z):
+    w = []
+
+    S_set = convertListInList2TupleInSet(S)
+    A_set = convertListInList2TupleInSet(A)
+    S_int_A = list(A_set)
+    S_sub_A = list(S_set - A_set)
+    S_uni_Z = S_int_A + [tuple(z)] + S_sub_A
+    prev_idx = len(S_uni_Z) - len(S_sub_A)
+    for i, v in enumerate(S_sub_A):
+        idx = prev_idx + i
+        if sc.is_superfluous(S_uni_Z, idx):
+            w.append(S_uni_Z[idx])
+    return w
