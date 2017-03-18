@@ -66,3 +66,13 @@ def exchange(S, A, z):
         if sc.is_superfluous(S_uni_Z, idx):
             w.append(S_uni_Z[idx])
     return w
+
+def exchange_another(S, A, z):
+    n_R = []
+    n_S = S[:]
+    n_S.append(z)
+
+    for i in range(len(n_S)):
+        if sc.is_superfluous(n_S, i) and n_S[i] not in A and n_S[i] != z:
+            n_R.append(n_S[i])
+    return n_R
