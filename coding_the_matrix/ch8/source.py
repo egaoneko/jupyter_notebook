@@ -1,4 +1,5 @@
 import numpy as np
+import random
 from numbers import Number
 
 class GF2(object):
@@ -39,21 +40,45 @@ class GF2Utils(object):
         matrix = np.matrix(mat)
         Gv = np.vectorize(GF2)
         return Gv(matrix)
+    
+    @staticmethod
+    def randGF2():
+        return GF2(random.randint(0,1))
+    
 
 def solve (a, b):
     return np.linalg.lstsq(a, b) if isinstance(a, int) else np.linalg.lstsq(a, b)
 
 def is_superfluous(L, i):
-    zero_like = 1e-14
-
     if len(L) == 1:
         return False
+    
+    is_gf2 = isinstance(L[0][0], GF2)
+    
+    if isinstance(L, np.ndarray):
+        L = L.tolist()
+    
+    if is_gf2:
+        return _is_superfluous_for_gf2(L, i)
+    else:
+        return _is_superfluous(L, i)
+
+def _is_superfluous(L, i):
+    zero_like = 1e-14
     A = np.transpose(np.array(L[:i] + L[i+1:]))
     b = np.array(L[i])
     u = np.transpose(np.array([solve(A,b)[0]]))
-
     residual = np.squeeze(np.asarray((np.transpose(np.asmatrix(b)) - np.asmatrix(A)*np.asmatrix(u))))
     return np.dot(residual, residual) < zero_like
+
+def _is_superfluous_for_gf2(L, i):
+    A = np.transpose(GF2Utils.getVector(L[:i] + L[i+1:]))
+    b = GF2Utils.getVector(L[i])
+    u = np.transpose(GF2Utils.getVector([solve(A,b)[0]]))
+    residual = np.squeeze(np.asarray((np.transpose(np.asmatrix(b)) - np.asmatrix(A)*np.asmatrix(u))))
+    au = np.squeeze(np.asarray(np.transpose(np.asmatrix(A)*np.asmatrix(u)))).tolist()
+    b = np.squeeze(np.asarray(np.asmatrix(b))).tolist()
+    return au == b
 
 def is_independent(L):
     for idx, val in enumerate(L):
