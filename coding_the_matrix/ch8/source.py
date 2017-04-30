@@ -14,6 +14,15 @@ class GF2(object):
         return self.__class__((self.val - int(val)) % self.MODULO)
     def __mul__(self, val):
         return self.__class__((self.val * int(val)) % self.MODULO)
+    def __div__(self, other):
+        if other == 0: raise ZeroDivisionError
+        return self
+    __truediv__ = __div__
+    def __rdiv__(self,other): return other
+    __rtruediv__ = __rdiv__
+    __radd__ = __add__
+    __rsub__ = __add__
+    __rmul__ = __mul__
     def __int__(self):
         return self.val
     def __repr__(self):
@@ -170,3 +179,36 @@ def find_matrix_inverse(A):
     vec = solve(A_m, I)[0]
     # print(vec)
     return vec.tolist()
+
+def generate_echelon_form(M):
+    m = np.array(M, dtype="float64")
+    row, col = m.shape
+    
+    i = np.identity(row)
+    
+    new_rowlist = []
+    new_m_rowlist = []
+    rows_left = set(range(row))
+    
+    for c in range(col):
+        rows_with_nonzero = [r for r in rows_left if m[r][c] != 0]
+        
+        if rows_with_nonzero != []:
+            pivot = rows_with_nonzero[0]
+            
+            new_rowlist.append(m[pivot])
+            rows_left.remove(pivot)
+            new_m_rowlist.append(i[pivot])
+            
+            for r in rows_with_nonzero[1:]:
+                multiplier = m[r][c] / m[pivot][c]
+                m[r] -= multiplier * m[pivot]
+                i[r] -= multiplier * i[pivot]
+                
+    for r in rows_left:
+        new_rowlist.append(m[r])
+        
+    for r in rows_left:
+        new_m_rowlist.append(i[r])
+    
+    return np.matrix(new_rowlist), np.matrix(new_m_rowlist)
