@@ -82,3 +82,8 @@ out/
 # Lib
 bower_components
 node_modules/
+machine_learning/deep_learning/dataset/mnist.pkl
+machine_learning/deep_learning/dataset/t10k-images-idx3-ubyte.gz
+machine_learning/deep_learning/dataset/t10k-labels-idx1-ubyte.gz
+machine_learning/deep_learning/dataset/train-images-idx3-ubyte.gz
+machine_learning/deep_learning/dataset/train-labels-idx1-ubyte.gz
